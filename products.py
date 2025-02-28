@@ -25,6 +25,7 @@ class Product:
         self.name = name
         self.price = price
         self.quantity = quantity
+        self.active = True
 
     def get_quantity(self) -> int:
         return self.quantity
@@ -33,7 +34,7 @@ class Product:
         self.quantity -= quantity
 
         if self.quantity == 0:
-            self.active = False
+            self.deactivate()
 
     def is_active(self):
         return self.active
