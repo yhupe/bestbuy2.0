@@ -1,9 +1,9 @@
 import products
 
 class Store:
-    """ It seems to be best practice to set iterable objects to none by default
-     because otherwise it's likely that instances share the same list.
-     If no product is provided, an empty list is assigned"""
+    """ Handles the 'logistics' of the instantiated store such as
+    adding or removing products, getting the quantity and fulfilling
+    orders"""
 
     def __init__(self, products= None):
         if products is None:

@@ -1,18 +1,32 @@
 from products import Product, NonStockProduct, LimitedProduct
 from store import Store
+from promotions import PercentageDiscount, Buy1Get1Free, SecondItemHalfPrice
 
-product_list = [
-    Product("MacBook Air M2", price=1450, quantity=100),
-    Product("Bose QuietComfort Earbuds", price=250, quantity=500),
-    Product("Google Pixel 7", price=500, quantity=250),
-    NonStockProduct("Windows License", price=125),
-    LimitedProduct("Shipping", price=10, quantity=250, maximum=1)
-]
+# defining available products
+macbook = Product("MacBook Air M2", price=1450, quantity=100)
+bose_earbuds = Product("Bose QuietComfort Earbuds", price=250, quantity=500)
+google_pixel = Product("Google Pixel 7", price=500, quantity=250)
+windows_license = NonStockProduct("Windows License", price=125)
+shipping = LimitedProduct("Shipping", price=10, quantity=250, maximum=1)
 
+# instantiating of the three discount types
+promo_percentage = PercentageDiscount("Today 30% off!!", 30)
+promo_buy1get1 = Buy1Get1Free("Buy 1 and get the 2nd item for FREE!!")
+promo_second_half_off = SecondItemHalfPrice("50% off the 2nd item!!")
+
+# applying discounts to available products
+macbook.set_promotion(promo_percentage)
+bose_earbuds.set_promotion(promo_second_half_off)
+google_pixel.set_promotion(promo_buy1get1)
+
+# adding all products to product list needed to instantiate the store
+product_list = [macbook, bose_earbuds, google_pixel, windows_license, shipping]
+
+# instantiating the store
 best_buy = Store(product_list)
 
-
 def start(store):
+    """ Shopping loop with user interface """
     while True:
         print("     Menu     ")
         print(10 * " - ")
@@ -64,7 +78,12 @@ def start(store):
 
                     selected_product = store.products[product_number - 1]
 
-                    if not selected_product.is_unlimited and order_quantity > selected_product.quantity:
+                    if isinstance(selected_product, LimitedProduct) and order_quantity > selected_product.maximum:
+                        print(
+                            f"\nYou can only buy {selected_product.maximum} of '{selected_product.name}' per order.\n")
+                        continue
+
+                    if not selected_product.is_unlimited() and order_quantity > selected_product.quantity:
                         print(f"\nYou can only buy {selected_product.maximum} of '{selected_product.name}' per order.\n")
                         continue
 
@@ -76,7 +95,7 @@ def start(store):
                     print(f"\nError: {e}\n")
 
             if shopping_list:
-                total_price = sum(selected_product.price * quantity for selected_product, quantity in shopping_list)
+                total_price = best_buy.order(shopping_list)
                 print(f"\nOrder complete! Total price: {total_price} €\n")
             else:
                 print("Your shopping basket is empty. Shopping process stopped.")
