@@ -36,6 +36,9 @@ class Product:
         if self.quantity == 0:
             self.deactivate()
 
+    def is_unlimited(self):
+        return False
+
     def is_active(self):
         return self.active
 
@@ -56,3 +59,37 @@ class Product:
         total_price = quantity * self.price
         self.set_quantity(quantity)
         return total_price
+
+class LimitedProduct(Product):
+    def __init__(self, name, price, quantity, maximum = 1):
+        super().__init__(name, price, quantity)
+        self.maximum = maximum
+
+    def show(self):
+        return super().show() + f", (maximum: {self.maximum})"
+
+    def buy(self, quantity) -> float:
+        if quantity > self.maximum:
+            raise ValueError(f"You can't buy more than {self.maximum} per order.")
+
+        total_price = quantity * self.price
+        self.set_quantity(quantity)
+        return total_price
+
+
+class NonStockProduct(Product):
+    def __init__(self, name, price):
+        super().__init__(name, price, quantity = 0)
+
+    def show(self):
+        return super().show().replace(f"Quantity: {self.quantity} pcs", "(unlimited quantity)")
+
+    def set_quantity(self, quantity):
+        raise NotImplementedError("NonStockProduct has unlimited stock and quantity cannot be set")
+
+    def is_unlimited(self):
+        return True
+
+    def buy(self, quantity) -> float:
+        return quantity * self.price
+
