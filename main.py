@@ -46,7 +46,8 @@ def start(store):
             print()
 
         elif user_input == "2":
-            quantity = sum(product.quantity for product in store.products if not product.is_unlimited())
+            quantity = sum(product.quantity for product in store.products
+                           if not product.is_unlimited())
             print(f"Total amount of {quantity} items in store\n")
 
         elif user_input == "3":
@@ -78,18 +79,22 @@ def start(store):
 
                     selected_product = store.products[product_number - 1]
 
-                    if isinstance(selected_product, LimitedProduct) and order_quantity > selected_product.maximum:
+                    if (isinstance(selected_product, LimitedProduct) and
+                            order_quantity > selected_product.maximum):
                         print(
-                            f"\nYou can only buy {selected_product.maximum} of '{selected_product.name}' per order.\n")
+                            f"\nYou can only buy {selected_product.maximum} "
+                            f"of '{selected_product.name}' per order.\n")
                         continue
 
                     if not selected_product.is_unlimited() and order_quantity > selected_product.quantity:
-                        print(f"\nYou can only buy {selected_product.maximum} of '{selected_product.name}' per order.\n")
+                        print(f"\nYou can only buy {selected_product.maximum} "
+                              f"of '{selected_product.name}' per order.\n")
                         continue
 
                     shopping_list.append((selected_product, order_quantity))
 
-                    print(f"\n{selected_product.name} (qty: {order_quantity}) added to your basket!\n")
+                    print(f"\n{selected_product.name} (qty: {order_quantity})"
+                          f" added to your basket!\n")
 
                 except ValueError as e:
                     print(f"\nError: {e}\n")

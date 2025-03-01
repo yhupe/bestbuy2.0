@@ -33,7 +33,8 @@ class SecondItemHalfPrice(Promotions):
         full_price_items_count = (quantity // 2) + (quantity % 2)
         half_price_items_count = (quantity // 2)
 
-        discounted_price = (full_price_items_count * product.price) + (half_price_items_count * (product.price * 0.5))
+        discounted_price = ((full_price_items_count * product.price) +
+                            (half_price_items_count * (product.price * 0.5)))
 
         return discounted_price
 
