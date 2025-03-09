@@ -40,7 +40,8 @@ class Product:
 
 
     def set_quantity(self, quantity):
-        """Reduces the product's quantity and deactivates it if it reaches zero. """
+        """Reduces the product's quantity and deactivates it
+        if it reaches zero. """
 
         self.quantity -= quantity
         if self.quantity <= 0:
@@ -48,7 +49,8 @@ class Product:
 
 
     def is_active(self) -> bool:
-        """Returns whether the product is active (i.e., available for purchase)."""
+        """Returns whether the product is active
+        (available for purchase or not)."""
 
         return self.active
 
@@ -59,20 +61,22 @@ class Product:
 
 
     def deactivate(self):
-        """Deactivates the product."""
+        """ Deactivates the product. """
 
         self.active = False
 
 
     def show(self) -> str:
-        """Returns a string representation of the product."""
+        """ Returns a string including information about the
+        available product, it's price and promo(if there is one) """
 
         promo_info = f" 🎁🎁🎁: {self.promotion.name}" if self.promotion else ""
-        return f"{self.name}, Price: {self.price} €, Quantity: {self.quantity} pcs{promo_info}"
+        return (f"{self.name}, Price: {self.price} €, "
+                f"Quantity: {self.quantity} pcs{promo_info}")
 
 
     def buy(self, quantity) -> float:
-        """Processes the purchase of a product of the passed quantity. """
+        """ Processes the purchase of a product of the passed quantity. """
         if quantity > self.quantity:
             raise ValueError("Not enough stock available.")
         total_price = quantity * self.price
@@ -101,31 +105,43 @@ class LimitedProduct(Product):
 
 class NonStockProduct(Product):
     """ Class inheriting (from class Product) modified to handle
-    products without the need of stock such as a Windows license or e-books etc... """
+    products without the need of stock such as a Windows license
+    or e-books etc... """
 
     def __init__(self, name, price):
         super().__init__(name, price, quantity=0)
 
     def is_active(self) -> bool:
         """Returns that NonStockProducts are always active."""
+
         return True
 
     def show(self):
-        """Displays that there is no quantity available, but it's unlimited."""
+        """Displays that there is no quantity available,
+        but that it's unlimited."""
+
         return f"{self.name}, Price: {self.price} €, (unlimited quantity)"
 
+
     def set_quantity(self, quantity):
-        """NonStockProducts quantity can not be set because it's 0 all the time."""
-        raise NotImplementedError("NonStockProduct has unlimited stock and quantity cannot be set.")
+        """ NonStockProducts quantity can not be set because
+        it's 0 all the time."""
+
+        raise NotImplementedError("NonStockProduct has unlimited stock and "
+                                  "quantity cannot be set.")
 
     def get_quantity(self) -> int:
-        """Returns 0 because it's an unlimited product."""
-        return 0  # No quantity as it is unlimited.
+        """ Returns 0 because it's an unlimited product. """
+
+        return 0
 
     def buy(self, quantity) -> float:
-        """Processes a purchase of an unlimited quantity product. No stock to reduce."""
+        """ Processes a purchase of an unlimited quantity product.
+        (no stock to reduce) """
+
         if quantity <= 0:
-            raise ValueError("Quantity must be greater than zero for non-stock products.")
+            raise ValueError("Quantity must be greater than zero for "
+                             "non-stock products.")
 
         total_price = quantity * self.price
         return total_price

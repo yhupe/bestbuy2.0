@@ -4,7 +4,7 @@ from promotions import PercentageDiscount, Buy1Get1Free, SecondItemHalfPrice
 
 
 def main():
-    """ Main function that runs the store application. """
+    """ Main function that runs the store application and creates the CLI for the user """
 
     # defining available products
     macbook = Product("MacBook Air M2", price=1450, quantity=100)
@@ -24,7 +24,8 @@ def main():
     google_pixel.set_promotion(promo_buy1get1)
 
     # adding all products to product list needed to instantiate the store
-    product_list = [macbook, bose_earbuds, google_pixel, windows_license, shipping]
+    product_list = [macbook, bose_earbuds, google_pixel,
+                    windows_license, shipping]
 
     # instantiating the store
     best_buy = Store(product_list)
@@ -48,7 +49,8 @@ def main():
             print()
 
         elif user_input == "2":
-            print(f"Total amount of {best_buy.get_total_quantity()} items in store\n")
+            print(f"Total amount of {best_buy.get_total_quantity()} "
+                  f"items in store\n")
 
         elif user_input == "3":
             best_buy.process_order()

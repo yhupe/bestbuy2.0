@@ -3,7 +3,8 @@ from products import LimitedProduct
 
 
 class Store:
-    """ Manages the products of the store and their quantity and handles ordering."""
+    """ Manages the products of the store and their quantity
+    and handles ordering. """
 
     def __init__(self, products=None):
         """ Initializes the store with a list of products. """
@@ -39,12 +40,15 @@ class Store:
 
         shopping_list = []
         available_products = self.get_all_products()
-        temporary_stock = {product: product.get_quantity() for product in available_products}
+        temporary_stock = {product: product.get_quantity() for product
+                           in available_products}
+
+        print("\nAvailable Products:")
+        for index, product in enumerate(available_products):
+            print(f"{index + 1}: {product.show()}")
 
         while True:
-            print("\nAvailable Products:")
-            for index, product in enumerate(available_products):
-                print(f"{index + 1}: {product.show()}")  # now shows promotions as well
+
 
             print("\nPress enter to quit order process ...\n")
             product_number = input("Which product # do you want?: ").strip()
@@ -67,24 +71,27 @@ class Store:
 
                 selected_product = available_products[product_number - 1]
 
-                # Handling LimitedProduct (like Shipping)
                 if isinstance(selected_product, LimitedProduct):
                     if order_quantity > selected_product.maximum:
-                        print(f"\nYou can only order up to {selected_product.maximum} of {selected_product.name}.")
+                        print(f"\nYou can only order up to "
+                              f"{selected_product.maximum} of "
+                              f"{selected_product.name}.")
                         continue
 
-                # Handling NonStockProduct (like Windows License) - Always available
                 if isinstance(selected_product, NonStockProduct):
-                    temporary_stock[selected_product] = float('inf')  # Set quantity to infinite for NonStockProducts
-                    print(f"\n{selected_product.name} has unlimited stock! You can buy as many as you like.")
+                    temporary_stock[selected_product] = float('inf')
+                    print(f"\n{selected_product.name} has unlimited stock! "
+                          f"You can buy as many as you like.")
 
                 if order_quantity > temporary_stock[selected_product]:
-                    print(f"\nNot enough items in stock - only {temporary_stock[selected_product]} left!\n")
+                    print(f"\nNot enough items in stock - only "
+                          f"{temporary_stock[selected_product]} left!\n")
                     continue
 
                 temporary_stock[selected_product] -= order_quantity
                 shopping_list.append((selected_product, order_quantity))
-                print(f"\n{selected_product.name} (qty: {order_quantity}) added to your basket!\n")
+                print(f"\n{selected_product.name} (qty: {order_quantity}) "
+                      f"added to your basket!\n")
 
             except ValueError:
                 print("\nYou must enter valid numbers!\n")
@@ -104,10 +111,14 @@ class Store:
                 print(f"Warning: {product.name} is inactive and cannot be ordered.")
                 continue
 
+            # Calculate the total price considering the promotion
             total_price_for_product = product.get_price(quantity)
 
+            # After calculating the price, now reduce the quantity of the product
             product.buy(quantity)
 
+            # Add the price to the total
             total_price += total_price_for_product
 
         return total_price
+
