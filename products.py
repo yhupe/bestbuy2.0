@@ -67,7 +67,8 @@ class Product:
     def show(self) -> str:
         """Returns a string representation of the product."""
 
-        return f"{self.name}, Price: {self.price} €, Quantity: {self.quantity} pcs"
+        promo_info = f" 🎁🎁🎁: {self.promotion.name}" if self.promotion else ""
+        return f"{self.name}, Price: {self.price} €, Quantity: {self.quantity} pcs{promo_info}"
 
 
     def buy(self, quantity) -> float:

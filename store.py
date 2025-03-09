@@ -44,8 +44,7 @@ class Store:
         while True:
             print("\nAvailable Products:")
             for index, product in enumerate(available_products):
-                print(
-                    f"{index + 1}: {product.name}, Price: {product.price} €, Quantity: {temporary_stock[product]} pcs")
+                print(f"{index + 1}: {product.show()}")  # now shows promotions as well
 
             print("\nPress enter to quit order process ...\n")
             product_number = input("Which product # do you want?: ").strip()
@@ -97,12 +96,18 @@ class Store:
             print("Your shopping basket is empty. Shopping process stopped.")
 
     def order(self, shopping_list) -> float:
-        """ Processes an order and returns the total price. """
+        """ Processes an order and returns the total price, applying promotions. """
 
         total_price = 0
         for product, quantity in shopping_list:
             if not product.is_active():
                 print(f"Warning: {product.name} is inactive and cannot be ordered.")
                 continue
-            total_price += product.buy(quantity)
+
+            total_price_for_product = product.get_price(quantity)
+
+            product.buy(quantity)
+
+            total_price += total_price_for_product
+
         return total_price
