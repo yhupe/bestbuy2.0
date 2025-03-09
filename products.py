@@ -1,80 +1,83 @@
 class Product:
-    """Initialization of instance variables is allowed
-    only after meeting criteria, otherwise an error is raised"""
+    """ Represents a product with a name, price, and quantity.
+    The product becomes inactive when its quantity reaches zero. """
 
     def __init__(self, name, price, quantity):
+        if not isinstance(name, str) or not name:
+            raise ValueError("Product name must be a non-empty string.")
 
-        if not isinstance(name, str):
-            raise TypeError(f"Product name must be a string ('blabla'),"
-                            f" got {type(name)} instead.")
+        if not isinstance(price, (int, float)) or price <= 0:
+            raise ValueError("Price must be a positive number.")
 
-        if not name:
-            raise ValueError("Name cannot be empty")
-
-        if not isinstance(price, (int, float)):
-            raise TypeError(f"Price must be a number (int or float),"
-                            f" got {type(price)} instead.")
-
-        if price <= 0:
-            raise ValueError("Price cannot be negative or 0")
-
-        if not isinstance(quantity, int):
-            raise TypeError(f"Quantity must be a whole number (int),"
-                            f" got {type(quantity)} instead.")
-
-        if quantity < 0:
-            raise ValueError("Quantity cannot be negative")
+        if not isinstance(quantity, int) or quantity < 0:
+            raise ValueError("Quantity must be a non-negative integer.")
 
         self.name = name
         self.price = price
         self.quantity = quantity
-        self.active = True
+        self.active = quantity > 0
         self.promotion = None
 
-    def get_quantity(self) -> int:
-        return self.quantity
-
-    def set_quantity(self, quantity):
-        self.quantity -= quantity
-
-        if self.quantity == 0:
-            self.deactivate()
-
-    def get_promotion(self):
-        return self.promotion
 
     def set_promotion(self, promotion):
+        """ Sets a promotion for a certain product. """
+
         self.promotion = promotion
 
-    def is_unlimited(self):
-        return False
 
-    def is_active(self):
+    def get_price(self, quantity) -> float:
+        """ Returns the price after applying the promotion. """
+
+        if self.promotion:
+            return self.promotion.apply_promotion(self, quantity)
+        return self.price * quantity
+
+
+    def get_quantity(self) -> int:
+        """Returns the current quantity of the product. """
+
+        return self.quantity
+
+
+    def set_quantity(self, quantity):
+        """Reduces the product's quantity and deactivates it if it reaches zero. """
+
+        self.quantity -= quantity
+        if self.quantity <= 0:
+            self.deactivate()
+
+
+    def is_active(self) -> bool:
+        """Returns whether the product is active (i.e., available for purchase)."""
+
         return self.active
 
     def activate(self):
+        """ Activates the product. """
+
         self.active = True
 
+
     def deactivate(self):
+        """Deactivates the product."""
+
         self.active = False
 
-    def show(self):
-        promotion_info = f"🎁🎁🎁 PROMOTION: {self.promotion.name}" \
-            if self.promotion else ""
-        return (f"{self.name}, Price: {self.price} €, "
-                f"Quantity: {self.quantity} pcs, {promotion_info}")
+
+    def show(self) -> str:
+        """Returns a string representation of the product."""
+
+        return f"{self.name}, Price: {self.price} €, Quantity: {self.quantity} pcs"
+
 
     def buy(self, quantity) -> float:
+        """Processes the purchase of a product of the passed quantity. """
         if quantity > self.quantity:
             raise ValueError("Not enough stock available.")
-
-        if self.promotion:
-            total_price = self.promotion.apply_promotion(self, quantity)
-        else:
-            total_price = quantity * self.price
-
+        total_price = quantity * self.price
         self.set_quantity(quantity)
         return total_price
+
 
 class LimitedProduct(Product):
     """ Sub-class inheriting (from class Product) modified to handle
@@ -96,22 +99,32 @@ class LimitedProduct(Product):
 
 
 class NonStockProduct(Product):
-    """ Sub-class inheriting (from class Product) modified to handle
+    """ Class inheriting (from class Product) modified to handle
     products without the need of stock such as a Windows license or e-books etc... """
+
     def __init__(self, name, price):
-        super().__init__(name, price, quantity = 0)
+        super().__init__(name, price, quantity=0)
 
-    def show(self):
-        return super().show().replace(f"Quantity: {self.quantity} pcs",
-                                      "(unlimited quantity)")
-
-    def set_quantity(self, quantity):
-        raise NotImplementedError("NonStockProduct has unlimited stock"
-                                  " and quantity cannot be set")
-
-    def is_unlimited(self):
+    def is_active(self) -> bool:
+        """Returns that NonStockProducts are always active."""
         return True
 
+    def show(self):
+        """Displays that there is no quantity available, but it's unlimited."""
+        return f"{self.name}, Price: {self.price} €, (unlimited quantity)"
+
+    def set_quantity(self, quantity):
+        """NonStockProducts quantity can not be set because it's 0 all the time."""
+        raise NotImplementedError("NonStockProduct has unlimited stock and quantity cannot be set.")
+
+    def get_quantity(self) -> int:
+        """Returns 0 because it's an unlimited product."""
+        return 0  # No quantity as it is unlimited.
+
     def buy(self, quantity) -> float:
+        """Processes a purchase of an unlimited quantity product. No stock to reduce."""
+        if quantity <= 0:
+            raise ValueError("Quantity must be greater than zero for non-stock products.")
+
         total_price = quantity * self.price
         return total_price
